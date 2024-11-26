@@ -13,14 +13,18 @@ fetch("http://localhost:4000/all")
 
 
 
-//--------------------------Button that push name and location------------------------//
+//--------------------------Button that push new cafe------------------------//
 submitButton.addEventListener("click",()=>{
-    const nameFromForm = document.querySelector("#name").value;
-    const locationFromForm = document.querySelector("#location").value;
+    const getName = document.querySelector("#name").value;
+    const getLocation = document.querySelector("#location").value;
+    const getRating = document.querySelector('#rating').value;
+    const getDescription = document.querySelector('#description').value;
 
     const jsonObjectToPost = {
-        name:nameFromForm,
-        location:locationFromForm
+        name:getName,
+        location:getLocation,
+        rating:getRating,
+        description:getDescription
     }
 
     const fetchConfiguration = {
@@ -31,7 +35,7 @@ submitButton.addEventListener("click",()=>{
         body: JSON.stringify(jsonObjectToPost)
     }
 
-    fetch("http://localhost:4000/new", fetchConfiguration)
+    fetch("http://localhost:4000/cafes/new", fetchConfiguration)
         .then(res => res.json())
         .then(res => console.log(res));
 });
