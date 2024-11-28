@@ -12,7 +12,7 @@ app.use(express.json());
 const connection = db.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'root',
+    password: 'susgaard',
     database: 'cafe_db'
 });
 
@@ -21,7 +21,7 @@ app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
 
-// ---------------------------- Endpoint to see all cafees and their info---------------------------------------//
+// ---------------------------- Endpoint to see all cafes -----------------------
 app.get('/cafes', (req, res) => {
     const query = 'SELECT * FROM cafes';
     connection.query(query, (error, results) => {
@@ -33,26 +33,12 @@ app.get('/cafes', (req, res) => {
     });
 });
 
-// ------------------------ Endpoint to see all restaurant only by names---------------------------------//
-
-
-app.get('/cafes/names', (req, res) => {
-    const query = 'SELECT name FROM cafes'; // Assuming your table is named `cafes`
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error('Error fetching all names:', error);
-            return res.status(500).send('Database query error');
-        }
-        res.send(results);
-    });
-});
-
-// ----------------------- Endpoint for adding a new cafe (POST /new)-----------------------------//
+// ----------------------- Endpoint for adding a new cafe (POST /cafes/new) -----------
 app.post('/cafes/new', (req, res) => {
     const { name, location, rating, description } = req.body;
 
     if (!name || !location || !rating || !description) {
-        return res.status(400).send('Missing name or location');
+        return res.status(400).send('Missing name, location, rating or description');
     }
 
     const query = 'INSERT INTO cafes (name, location, rating, description) VALUES (?, ?, ?, ?)';
@@ -65,64 +51,42 @@ app.post('/cafes/new', (req, res) => {
     });
 });
 
-// Create endpoint for unique cafeid
-app.get('/cafes/id/:id', (req, res) => {
-    const cafeId = req.params.id
-    if (isNaN(cafeId)) {
-        return res.status(400).send('Invalid cafe ID')
+// ---------------------------- Endpoint to see all users -----------------------
+app.get('/users', (req, res) => {
+    const query = 'SELECT * FROM users';
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error executing query:', error);
+            return res.status(500).send('Database query error');
+        }
+        res.json(results);
+    });
+});
+
+// ----------------------- Endpoint for adding a new User (POST /users/new) --------------------
+app.post('/users/new', (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).send('Missing username, email or password');
     }
-    const query = 'SELECT name FROM cafes WHERE cafe_id = ?';
-    connection.query(query, [cafeId] ,(error, results) => {
-        if (error) {
-            console.error('Error fetching unique Cafe:', error);
-            return res.status(500).send('Database query error');
-            // Check if the returned array object is larger than 0 (meaning it's empty)
-        } if (results.length === 0) {
-            return res.status(404).send('Cafe with this Unique ID does not exist.')
-        }
-        res.send(results);
-    });
-});
 
-// Endpoint to see specific cafe
-app.get('/cafes/name/:name', (req, res) => {
-    const queryParams = req.params.name;
-    const query = 'SELECT * FROM cafes WHERE name = ?'; // Assuming your table is named `cafes`
-    connection.query(query, [queryParams], (error, results) => {
-        if (error) {
-            console.error('Error fetching cafe by name:', error);
+    // ----------- Check if the username or email already exists ------------
+    const checkQuery = 'SELECT * FROM users WHERE username = ? OR email = ?';
+    connection.query(checkQuery, [username, email], (checkError, results) => {
+        if (checkError) {
+            console.error('Error checking for existing user:', checkError);
             return res.status(500).send('Database query error');
         }
-        res.send(results);
-    });
-});
 
-// Create query parameter to filter by cafe rating (not working yet)
-app.get('/cafes/rating', (req, res) => {
-    const { rating } = req.query
-    const parsedRating = parseInt(rating)
-    if (!isNaN(parsedRating)) {
-        const query = 'SELECT * FROM cafes WHERE rating >= ?'
-        connection.query(query, [parsedRating], (error, results) => {
-            if (error) {
-                console.error('Error fetching rating lower than provided parameter: ', error)
-                return res.status(500).send('Database query error')
-            }
-            res.send(results)
+        if (results.length > 0) {
+            return res.status(409).send('Username or email already in use');
+        }
+
+        // ------------- Insert into table users -----------
+        const query = 'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)';
+        connection.query(query, [username, email, password], (error, results) => {
+            res.status(201).json({ id: results.insertId, username, email });
         });
-    } else {
-        res.status(400).send('Invalid rating parameter')
-    }
+    });
 });
-
-// Fallback for unmatched routes (ChatGpt svar)
-app.use('*', (req, res) => {
-    res.sendStatus(404);
-});
-
-
-
-
-
-
-

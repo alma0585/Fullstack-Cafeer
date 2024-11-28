@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studenter Cafeer</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="flexbox">
@@ -28,12 +28,36 @@
                 <input type="text" id="description" name="description" required>
             </div>
             <div class="form-group">
-                <button id="submit" type="button">Submit</button>
+                <button id="submitCafe" type="button">Submit</button>
             </div>
         </form>
     </div>
     <ul id="all-cafe"></ul>
 </div>
+<div class="flexbox">
+    <div class="form-container">
+        <div class="form-header">Create a new user</div>
+        <form id="modernFormUser">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="text" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="text" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <button id="submitUser" type="button">Submit</button>
+            </div>
+        </form>
+    </div>
+    <ul id="all-user"></ul>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script src="main.js"></script>
 </body>
 </html>
