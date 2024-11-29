@@ -85,7 +85,7 @@ app.get('/cafes/id/:id', (req, res) => {
     });
 });
 
-// -----------------------Endpoint to see specific cafe------------//
+// ----------------------- Endpoint to see specific cafe ----------------------//
 app.get('/cafes/name/:name', (req, res) => {
     const queryParams = req.params.name;
     const query = 'SELECT * FROM cafes WHERE name = ?'; // Assuming your table is named `cafes`
@@ -159,7 +159,7 @@ app.get('/cafes/size', (req, res) => {
     });
 });
 
-// ----------------------- Endpoint for adding a new User (POST /users/new) --------------------
+// ------------------- Endpoint for adding a new User (POST /users/new) -------------------- //
 app.post('/users/new', (req, res) => {
     const { username, email, password } = req.body;
 
@@ -167,7 +167,7 @@ app.post('/users/new', (req, res) => {
         return res.status(400).send('Missing username, email or password');
     }
 
-    // ----------- Check if the username or email already exists ------------
+    // -------------- Check if the username or email already exists ------------ //
     const checkQuery = 'SELECT * FROM users WHERE username = ? OR email = ?';
     connection.query(checkQuery, [username, email], (checkError, results) => {
         if (checkError) {
@@ -179,7 +179,7 @@ app.post('/users/new', (req, res) => {
             return res.status(409).send('Username or email already in use');
         }
 
-        // ------------- Insert into table users -----------
+        // ---------------------------- Insert into table users -------------------- //
         const query = 'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)';
         connection.query(query, [username, email, password], (error, results) => {
             res.status(201).json({ id: results.insertId, username, email });
